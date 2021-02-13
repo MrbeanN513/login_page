@@ -81,6 +81,9 @@ class _LoginlayoutState extends State<Loginlayout> {
   bool _obscureText = true;
   var _formKey = GlobalKey<FormState>();
   var isLoading = false;
+  FocusNode currentNode = FocusNode();
+  FocusNode nextFocus = FocusNode();
+  FocusNode button = FocusNode();
 
   void _submit() {
     final isValid = _formKey.currentState!.validate();
@@ -125,9 +128,13 @@ class _LoginlayoutState extends State<Loginlayout> {
                         padding: EdgeInsets.fromLTRB(scaler.getWidth(5), 0,
                             scaler.getWidth(5), scaler.getWidth(2)),
                         child: TextFormField(
+                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.emailAddress,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
-                          onFieldSubmitted: (value) {},
+                          onFieldSubmitted: (value) {
+                            currentNode.unfocus();
+                            FocusScope.of(context).requestFocus(nextFocus);
+                          },
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'UserName Required!';
@@ -163,9 +170,14 @@ class _LoginlayoutState extends State<Loginlayout> {
                         padding: EdgeInsets.fromLTRB(
                             scaler.getWidth(5), 0, scaler.getWidth(5), 0),
                         child: TextFormField(
+                           textInputAction: TextInputAction.next,
+                          focusNode: nextFocus,
                           keyboardType: TextInputType.emailAddress,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
-                          onFieldSubmitted: (value) {},
+                          onFieldSubmitted: (value) {
+                            nextFocus.unfocus();
+                            FocusScope.of(context).requestFocus(button);
+                          },
                           validator: (value) {
                             if (value!.isEmpty) {
                               return ' Password Required!';
@@ -214,6 +226,7 @@ class _LoginlayoutState extends State<Loginlayout> {
                       Padding(
                         padding: EdgeInsets.all(scaler.getWidth(5)),
                         child: ElevatedButton(
+                          focusNode: button,
                           child: Text(
                             "Sign in",
                             style: TextStyle(color: Colors.white),

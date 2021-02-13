@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+// import 'package:login/button/button_login.dart';
 import 'package:login/util/screensize.dart';
 
 class MylandscapeHomePage extends StatefulWidget {
@@ -50,14 +51,14 @@ class _MylandscapeHomePageState extends State<MylandscapeHomePage> {
             Align(
                 alignment: Alignment.bottomRight,
                 child: Container(
-                  height: scaler.getHeight(5),
+                  height: scaler.getWidth(4.5),
                   color: Colors.black.withAlpha(225),
                   child: ListTile(
                     trailing: Text("Need Help?",
-                        style: TextStyle(color: Colors.white, fontSize: 13)),
+                        style: TextStyle(color: Colors.white, fontSize: 11)),
                     title: Text(
                         "© Copyright 2021 - unlimited \nMade by Goutam & Tapos",
-                        style: TextStyle(color: Colors.white, fontSize: 13)),
+                        style: TextStyle(color: Colors.white, fontSize: 11)),
                     // subtitle: Text("  Made by Goutam & Tapos",
                     //     style: TextStyle(color: Colors.white, fontSize: 11)),
                   ),
@@ -81,6 +82,9 @@ class _LoginlayoutState extends State<Loginlayout> {
   bool _obscureText = true;
   var _formKey = GlobalKey<FormState>();
   var isLoading = false;
+  FocusNode currentNode = FocusNode();
+  FocusNode nextFocus = FocusNode();
+  FocusNode button = FocusNode();
 
   void _submit() {
     final isValid = _formKey.currentState!.validate();
@@ -97,8 +101,8 @@ class _LoginlayoutState extends State<Loginlayout> {
       child: Center(
         child: Container(
             // color: Colors.orange,
-            width: scaler.getWidth(25),
-            height: scaler.getHeight(50),
+            width: scaler.getWidth(45),
+            height: scaler.getHeight(72),
             child: Card(
               color: Colors.black.withAlpha(225),
               child: Form(
@@ -114,20 +118,19 @@ class _LoginlayoutState extends State<Loginlayout> {
                         width: scaler.getWidth(10),
                         height: scaler.getHeight(10),
                         child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                _formKey.currentState!.reset();
-                              });
-                            },
                             child: Image.asset('assets/images/logo.png')),
                       ),
                       Container(
                         padding: EdgeInsets.fromLTRB(
                             scaler.getWidth(2), 0, scaler.getWidth(2), 0),
                         child: TextFormField(
+                          textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.emailAddress,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
-                          onFieldSubmitted: (value) {},
+                          onFieldSubmitted: (value) {
+                            currentNode.unfocus();
+                            FocusScope.of(context).requestFocus(nextFocus);
+                          },
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'UserName Required!';
@@ -153,6 +156,17 @@ class _LoginlayoutState extends State<Loginlayout> {
                               borderRadius: BorderRadius.circular(5.0),
                             ),
                             labelText: 'User Name',
+                            suffixIcon: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    _formKey.currentState!.reset();
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.backspace_outlined,
+                                  size: 15,
+                                  color: Colors.grey,
+                                )),
                             prefixIcon: Icon(Icons.person, color: Colors.grey),
                             labelStyle:
                                 TextStyle(color: Colors.white, fontSize: 15),
@@ -163,9 +177,14 @@ class _LoginlayoutState extends State<Loginlayout> {
                         padding: EdgeInsets.fromLTRB(
                             scaler.getWidth(2), 0, scaler.getWidth(2), 0),
                         child: TextFormField(
+                          focusNode: nextFocus,
+                          textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.emailAddress,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
-                          onFieldSubmitted: (value) {},
+                          onFieldSubmitted: (value) {
+                            nextFocus.unfocus();
+                            FocusScope.of(context).requestFocus(button);
+                          },
                           validator: (value) {
                             if (value!.isEmpty) {
                               return ' Password Required!';
@@ -201,7 +220,7 @@ class _LoginlayoutState extends State<Loginlayout> {
                                 _obscureText
                                     ? Icons.remove_red_eye_outlined
                                     : Icons.remove_red_eye,
-                                size: 25.0,
+                                size: 20,
                                 color: Colors.white,
                               ),
                             ),
@@ -212,8 +231,10 @@ class _LoginlayoutState extends State<Loginlayout> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(scaler.getWidth(2)),
+                        padding: EdgeInsets.fromLTRB(scaler.getWidth(2),
+                            scaler.getWidth(2), scaler.getWidth(2), 0),
                         child: ElevatedButton(
+                          focusNode: button,
                           child: Text(
                             "Sign in",
                             style: TextStyle(color: Colors.white),

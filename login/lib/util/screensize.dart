@@ -1,6 +1,5 @@
 import 'dart:core';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 /// A package to scale your widgets according to the screen size with the use of percentages.
