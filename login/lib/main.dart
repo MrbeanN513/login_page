@@ -1,23 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:login/layout/landscape/landscape.dart';
-import 'package:login/layout/potrait/potrait.dart';
 
-void main() => runApp(MyApp());
+import 'package:login/login_page/layout/landscape/landscape.dart';
+import 'package:login/login_page/layout/potrait/potrait.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:login/login_page/util/authentication_service.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Shortcuts(
-      // needed for AndroidTV to be able to select
-      shortcuts: {
-        LogicalKeySet(LogicalKeyboardKey.select): const ActivateIntent(),
-      },
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Layout(),
+    return MultiProvider(
+      providers: [
+        Provider<AuthenticationService>(
+          create: (_) => AuthenticationService(FirebaseAuth.instance),
+        ),
+        StreamProvider(
+          create: (context) =>
+              context.read<AuthenticationService>().authStateChanges,
+        )
+      ],
+      child: Shortcuts(
+        // needed for AndroidTV to be able to select
+        shortcuts: {
+          LogicalKeySet(LogicalKeyboardKey.select): const ActivateIntent(),
+        },
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: AuthenticationWrapper(),
+        ),
       ),
     );
+  }
+}
+
+class AuthenticationWrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final firebaseUser = context.watch<User>();
+
+    if (firebaseUser != null) {
+      return Container(color: Colors.green);
+    }
+    return Layout();
   }
 }
 
