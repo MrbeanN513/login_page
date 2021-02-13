@@ -124,6 +124,7 @@ class _LoginlayoutState extends State<Loginlayout> {
                         padding: EdgeInsets.fromLTRB(
                             scaler.getWidth(2), 0, scaler.getWidth(2), 0),
                         child: TextFormField(
+                          autofocus: true,
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.emailAddress,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
